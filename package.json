@@ -1,0 +1,19 @@
+{
+  "name": "predicacionexpositiva",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "node apps/api/dist/main"
+  },
+  "keywords": [],
+  "author": "oisb",
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^1.8.5"
+  },
+  "workspaces": [
+    "apps/*"
+  ]
+}
