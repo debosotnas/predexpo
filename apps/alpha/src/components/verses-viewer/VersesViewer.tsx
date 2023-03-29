@@ -17,7 +17,9 @@ function VersesViewer() {
                 <div className='p-5'>
                   <HtmlContainer html={verseData.greek} />
                 </div>
-                {/* TODO: agregar versiculo en otra version */}
+                <div className='p-5'>
+                  <HtmlContainer html={verseData.verse} />
+                </div>
               </div>
             );
           })

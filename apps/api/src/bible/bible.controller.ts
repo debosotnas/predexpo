@@ -1,5 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { BiBleSource, BibleVersion } from './bible.enum';
 import { BibleService } from './bible.service';
+import { DataVerseResponse } from './bible.type';
 
 @Controller('bible')
 export class BibleController {
@@ -10,11 +12,15 @@ export class BibleController {
     @Param('book') book: number,
     @Param('chapter') chapter: number,
     @Param('verse') verse: number,
-  ): Promise<string> {
+    @Query()
+    { source, version }: { source: BiBleSource; version: BibleVersion },
+  ): Promise<DataVerseResponse> {
     return this.bibleService.getVerse({
       book,
       chapter,
       verse,
+      source,
+      version,
     });
   }
 }

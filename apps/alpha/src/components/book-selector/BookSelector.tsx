@@ -1,46 +1,9 @@
-import axios from 'axios';
 import { FormEvent, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Select from 'react-select';
-import { addVersesAction, RootState } from '../../store';
-import { VerseData, VersesToLoadInfo } from '../../types/verses';
+import { useLoadVerses } from '../../hooks/useLoadVerses';
+import { addVersesAction } from '../../store';
 import { IBook, NT_BOOKS } from './books.types';
-
-function useLoadVerses() {
-  const versesDataLoaded = useSelector((state: RootState) => {
-    return state.verses.dataLoaded;
-  });
-
-  const getVerses: (
-    v: VersesToLoadInfo | VersesToLoadInfo[]
-  ) => Promise<VerseData> = async (
-    versesToLoad: VersesToLoadInfo | VersesToLoadInfo[]
-  ) => {
-    const { selectedBook, selectedChapter, selectedVerse } = Array.isArray(
-      versesToLoad
-    )
-      ? versesToLoad[0]
-      : versesToLoad;
-
-    const verseSearchId = `${selectedBook}/${selectedChapter}/${selectedVerse}`;
-    let verseData: VerseData | undefined = versesDataLoaded.find(
-      (verse: VerseData) => verse.id === verseSearchId
-    );
-    if (!verseData) {
-      const { data } = await axios.get(
-        `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}`
-      );
-      verseData = {
-        id: verseSearchId,
-        greek: data,
-        verse: '',
-      };
-    }
-    return verseData;
-  };
-  // return [getVerses];
-  return getVerses;
-}
 
 function BookSelector() {
   const [selectedBook, setSelectedBook] = useState<number | undefined>(0);
