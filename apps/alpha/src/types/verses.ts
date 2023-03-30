@@ -1,5 +1,6 @@
 export interface VerseData {
   id: string;
+  label: string;
   verse: string;
   greek: string;
 }

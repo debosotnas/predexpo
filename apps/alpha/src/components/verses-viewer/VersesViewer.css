@@ -1,0 +1,7 @@
+.word-block .expert-mode, .word-block .expert-mode+br {
+  display: none;
+}
+
+.render-as-expert-mode .word-block .expert-mode, .render-as-expert-mode .word-block .expert-mode+br {
+  display: inline-block;
+}

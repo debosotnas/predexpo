@@ -2,7 +2,7 @@ import { GetVersesDto } from './dto/get-verses.dto';
 
 export const BIBLE_1909_ID = '592420522e16049f-01'; // defined in api.scripture
 
-export const BIBLE_1909_ABBR = [
+export const BIBLE_ABBR = [
   'GEN',
   'EXO',
   'LEV',
@@ -77,5 +77,5 @@ export const getScriptureApiEndpoint = ({
   verse,
 }: GetVersesDto) =>
   `https://api.scripture.api.bible/v1/bibles/${BIBLE_1909_ID}/verses/${
-    BIBLE_1909_ABBR[book - 1]
+    BIBLE_ABBR[book - 1]
   }.${chapter}.${verse}`;

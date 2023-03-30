@@ -16,8 +16,17 @@ const versesSlice = createSlice({
       state.dataLoaded.push(action.payload);
       state.dataRendered.push(action.payload);
     },
+    removeRenderVerse(state, action: PayloadAction<string>) {
+      const idx = state.dataRendered.findIndex(
+        (v: VerseData) => v.id === action.payload
+      );
+      state.dataRendered.splice(idx, 1);
+    },
   },
 });
 
-export const { addVerses: addVersesAction } = versesSlice.actions;
+export const {
+  addVerses: addVersesAction,
+  removeRenderVerse: removeRenderVerseAction,
+} = versesSlice.actions;
 export { versesSlice };

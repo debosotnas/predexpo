@@ -1,11 +1,17 @@
 import { FormEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { useLoadVerses } from '../../hooks/useLoadVerses';
-import { addVersesAction } from '../../store';
+import {
+  addVersesAction,
+  RootState,
+  setExpertViewModeAction,
+} from '../../store';
 import { IBook, NT_BOOKS } from './books.types';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 function BookSelector() {
+  const [formDisabled, setFormDisabled] = useState<boolean>(false);
   const [selectedBook, setSelectedBook] = useState<number | undefined>(0);
   const [selectedChapter, setSelectedChapter] = useState<number | undefined>();
   const [selectedVerse, setSelectedVerse] = useState<number | undefined>();
@@ -13,6 +19,10 @@ function BookSelector() {
   const loadVerses = useLoadVerses();
 
   const [errors, setErrors] = useState<string[]>([]);
+
+  const renderAsExpertMode: boolean = useSelector((state: RootState) => {
+    return state.config.viewInExpertMode;
+  });
 
   const handleSubmitForm = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -31,6 +41,7 @@ function BookSelector() {
       setErrors(errs);
       return;
     }
+    setFormDisabled(true);
     setErrors(errs);
 
     const verse = await loadVerses({
@@ -38,26 +49,16 @@ function BookSelector() {
       selectedChapter,
       selectedVerse,
     });
-
+    setFormDisabled(false);
+    if (!verse) {
+      setErrors(['El versículo no fue encontrado']);
+      return;
+    }
+    setErrors([]);
+    setSelectedBook(0);
+    setSelectedChapter(undefined);
+    setSelectedVerse(undefined);
     dispatch(addVersesAction(verse));
-
-    // -------------------------------------
-    /*
-    //TODO: Use axios
-    const res = await fetch(
-      `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}`
-    );
-    //TODO: instead use .text, use json and
-    const data = await res.text();
-
-    dispatch(
-      addVersesAction({
-        id: `${selectedBook}/${selectedChapter}/${selectedVerse}`,
-        greek: data,
-        verse: '',
-      })
-    );
-    */
   };
 
   const ntOptions = NT_BOOKS.map((book: IBook) => ({
@@ -72,19 +73,27 @@ function BookSelector() {
     updater(Number(val));
   };
 
+  const handleConfigExpertMode = () => {
+    dispatch(setExpertViewModeAction(!renderAsExpertMode));
+  };
+
   return (
-    <div className='container'>
-      <div className=' w-96 mx-auto'>
+    <div className='container flex justify-between'>
+      <div className=''>
         <form onSubmit={handleSubmitForm}>
           <div className='flex items-center'>
             <Select
+              key={`my_unique_select_key__${selectedBook}`}
+              value={
+                ntOptions.filter((opt) => opt.value === selectedBook) || ''
+              }
               className='basic-single w-40 mr-2'
               classNamePrefix='select'
               onChange={(evt) => setSelectedBook(evt?.value)}
-              isClearable={false}
               isSearchable={true}
               name='color'
               options={ntOptions}
+              placeholder={'Seleccione...'}
             />
             <div className='mr-2'>
               <input
@@ -92,6 +101,7 @@ function BookSelector() {
                 onChange={(evt) =>
                   setChangeNumber(evt?.target?.value, setSelectedChapter)
                 }
+                disabled={formDisabled}
                 type='text'
                 className='input input-bordered input-xs w-10 h-10'
               />
@@ -101,28 +111,54 @@ function BookSelector() {
                 onChange={(evt) =>
                   setChangeNumber(evt?.target?.value, setSelectedVerse)
                 }
+                disabled={formDisabled}
                 type='text'
                 className='input input-bordered input-xs w-10 h-10'
               />
             </div>
-            <button type={'submit'} className='btn btn-sm'>
+            <button
+              type={'submit'}
+              className='btn btn-sm'
+              disabled={formDisabled}
+            >
               Cargar!
             </button>
+            {formDisabled ? (
+              <span className='ml-2'>
+                <AiOutlineLoading3Quarters className='animate-spin' />
+              </span>
+            ) : (
+              ''
+            )}
           </div>
         </form>
         {errors?.length ? (
-          <div className='color-red'>
-            <ul className='list-inside'>
-              {errors.map((msg: string, idx: number) => (
-                <li key={idx} className='text-sm list-disc text-pink-500'>
-                  {msg}
-                </li>
-              ))}
-            </ul>
+          <div className='color-red mt-1'>
+            {errors.map((msg: string, idx: number) => (
+              <div
+                key={idx}
+                className='text-sm text-center rounded list-disc text-pink-500'
+              >
+                {msg}
+              </div>
+            ))}
           </div>
         ) : (
           ''
         )}
+      </div>
+      <div className='flex flex-col'>
+        <div className='form-control'>
+          <label className='cursor-pointer label'>
+            <span className='label-text mr-2'>Modo experto</span>
+            <input
+              onClick={handleConfigExpertMode}
+              type='checkbox'
+              className='toggle toggle-info'
+              defaultChecked={renderAsExpertMode}
+            />
+          </label>
+        </div>
       </div>
     </div>
   );

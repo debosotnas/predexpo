@@ -10,7 +10,7 @@ export function useLoadVerses() {
 
   const getVerses: (
     v: VersesToLoadInfo | VersesToLoadInfo[]
-  ) => Promise<VerseData> = async (
+  ) => Promise<VerseData | undefined> = async (
     versesToLoad: VersesToLoadInfo | VersesToLoadInfo[]
   ) => {
     const { selectedBook, selectedChapter, selectedVerse } = Array.isArray(
@@ -23,15 +23,21 @@ export function useLoadVerses() {
     let verseData: VerseData | undefined = versesDataLoaded.find(
       (verse: VerseData) => verse.id === verseSearchId
     );
+    // Get verse from DB if it wasn't previously loaded
     if (!verseData) {
-      const { data } = await axios.get(
-        `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}`
-      );
-      verseData = {
-        id: data.id,
-        greek: data.greek,
-        verse: data.verse,
-      };
+      try {
+        const { data } = await axios.get(
+          `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}`
+        );
+        verseData = {
+          id: data.id,
+          label: data.label,
+          greek: data.greek,
+          verse: data.verse,
+        };
+      } catch (err) {
+        return;
+      }
     }
     return verseData;
   };

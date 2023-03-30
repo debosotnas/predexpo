@@ -1,7 +1,7 @@
 import sanitizeHtml, { Attributes, IFrame, IOptions } from 'sanitize-html';
 
 const sanitizeOptions: IOptions = {
-  allowedTags: ['div', 'font', 'br', 'span', 'tvm', 'grk', 'num'],
+  allowedTags: ['div', 'font', 'br', 'span', 'tvm', 'grk', 'num', 'p'],
   allowedAttributes: false,
   transformTags: {
     td: () => {
@@ -17,8 +17,7 @@ const sanitizeOptions: IOptions = {
       return {
         tagName: 'div',
         attribs: {
-          class:
-            'grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-1',
+          class: 'flex flex-wrap gap-1 main-html-container',
         },
       };
     },
@@ -30,7 +29,7 @@ const sanitizeOptions: IOptions = {
         };
       } else if (attribs?.color === '#663399') {
         newClass = {
-          class: 'text-gray-500 text-xs',
+          class: 'text-gray-500 text-xs expert-mode',
         };
       }
       return {
@@ -58,7 +57,15 @@ const sanitizeOptions: IOptions = {
       return {
         tagName: 'tvm',
         attribs: {
-          class: 'text-slate-400 text-xs',
+          class: 'text-slate-400 text-xs expert-mode',
+        },
+      };
+    },
+    p: (tagName: string, attribs: Attributes) => {
+      return {
+        tagName: 'p',
+        attribs: {
+          class: attribs?.class === 's' ? 'hidden' : attribs?.class,
         },
       };
     },
@@ -66,7 +73,7 @@ const sanitizeOptions: IOptions = {
       return {
         tagName: 'num',
         attribs: {
-          class: 'text-slate-400 text-xs',
+          class: 'text-slate-400 text-xs expert-mode',
         },
       };
     },
@@ -80,6 +87,14 @@ const sanitizeOptions: IOptions = {
         frame.text.endsWith(')'))
     );
   },
+  textFilter: function (text, tagName) {
+    if (['span'].indexOf(tagName) > -1) {
+      if (String(+text) === text) {
+        return `<span class='inline-block mr-1 text-xs font-bold'>${text}</span>`;
+      }
+    }
+    return text;
+  },
 };
 
 const sanitizeFn = (dirty: string, options: any) => {
@@ -88,8 +103,29 @@ const sanitizeFn = (dirty: string, options: any) => {
   };
 };
 
-function HtmlContainer({ html, options }: { html: any; options?: any }) {
-  return <div dangerouslySetInnerHTML={sanitizeFn(html, options)} />;
+const preProcessFn = (html: any) => {
+  return html.replaceAll('</tvm>, <tvm>', '</tvm><tvm>, </tvm><tvm>');
+};
+function HtmlContainer({
+  html,
+  options,
+  className,
+  preProcessHtml,
+}: {
+  html: any;
+  options?: any;
+  className?: string;
+  preProcessHtml?: boolean;
+}) {
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={sanitizeFn(
+        preProcessHtml ? preProcessFn(html) : html,
+        options
+      )}
+    />
+  );
 }
 
 export { HtmlContainer };

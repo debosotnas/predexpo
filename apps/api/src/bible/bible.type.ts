@@ -12,6 +12,7 @@ export interface ExternalVerseResponse {
 
 export interface DataVerseResponse {
   id: string;
+  label: string;
   greek: string;
   verse: string;
   // verse: ExternalVerseResponse;
