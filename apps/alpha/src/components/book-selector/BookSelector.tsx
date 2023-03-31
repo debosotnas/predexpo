@@ -78,7 +78,7 @@ function BookSelector() {
   };
 
   return (
-    <div className='container flex justify-between'>
+    <div className='container flex justify-between bg-slate-100 p-2'>
       <div className=''>
         <form onSubmit={handleSubmitForm}>
           <div className='flex items-center'>
@@ -91,7 +91,7 @@ function BookSelector() {
               classNamePrefix='select'
               onChange={(evt) => setSelectedBook(evt?.value)}
               isSearchable={true}
-              name='color'
+              name='books'
               options={ntOptions}
               placeholder={'Seleccione...'}
             />

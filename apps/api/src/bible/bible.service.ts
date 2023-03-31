@@ -8,13 +8,18 @@ import { open } from 'sqlite';
 import { ConfigService } from '@nestjs/config';
 import { GetVersesDto } from './dto/get-verses.dto';
 import { BiBleSource, BibleVersion } from './bible.enum';
-import { BIBLE_ABBR, getScriptureApiEndpoint } from './bible.data';
+import {
+  BIBLE_ABBR,
+  BIBLE_VERSIONS,
+  getScriptureApiEndpoint,
+} from './bible.data';
 import axios from 'axios';
 import {
   DataVerseResponse,
   ExternalVerseResponse,
   ScriptureApiVerseData,
 } from './bible.type';
+import { JSDOM } from 'jsdom';
 
 @Injectable()
 export class BibleService {
@@ -36,15 +41,16 @@ export class BibleService {
     if (!row) {
       throw new NotFoundException('Bible verse not found');
     }
-
-    const externalVerse: ExternalVerseResponse = await this.getExternalVerse(
-      getVersesDto,
-    );
+    // For now leaving without external verse. FE will get once greek version will be rendered
+    // const externalVerse: ExternalVerseResponse = await this.getExternalVerse(
+    //   getVersesDto,
+    // );
     const response: DataVerseResponse = {
       id: `${book}/${chapter}/${verse}`,
       label: `${BIBLE_ABBR[book - 1]}. ${chapter}:${verse}`,
       greek: row?.Scripture ? row.Scripture : '',
-      verse: externalVerse.verse,
+      verse: '',
+      // verse: externalVerse.verse,
     };
 
     return response;
@@ -52,37 +58,87 @@ export class BibleService {
 
   async getExternalVerse(
     versesData: GetVersesDto,
+  ): Promise<ExternalVerseResponse | ExternalVerseResponse[]> {
+    const enabledVersions = BIBLE_VERSIONS.map((bv) => bv.value);
+    const bibleVersion: BibleVersion = versesData.version
+      ? versesData.version
+      : BibleVersion.V1909;
+
+    if (!enabledVersions.includes(bibleVersion)) {
+      throw new NotFoundException(`Version '${bibleVersion}' not found'`);
+    }
+
+    if (bibleVersion === BibleVersion.V1909) {
+      return this.getFromScripture({ ...versesData, version: bibleVersion });
+    }
+
+    return this.getFromBG({ ...versesData, version: bibleVersion });
+  }
+
+  async getFromScripture(
+    versesData: GetVersesDto,
   ): Promise<ExternalVerseResponse> {
-    // const { book, chapter, verse, source } = versesData;
-    const { book, chapter, verse, source, version } = versesData;
-    const bibleSource: BiBleSource = source ? source : BiBleSource.SCRIPTURE;
-    const bibleVersion: BibleVersion = version ? version : BibleVersion.V1909;
-
-    // add more external-sources, for now only scriptureApi
-    if (bibleSource !== BiBleSource.SCRIPTURE) {
-      throw new NotFoundException(`Bible '${bibleSource}' not found`);
-    }
-
-    if (bibleVersion !== BibleVersion.V1909) {
-      throw new NotFoundException(
-        `Version '${bibleVersion}' not found for '${bibleSource}'`,
-      );
-    }
-
+    const { book, chapter, verse, version } = versesData;
     const scriptureApiKey = this.configService.get<string>('API_BIBLE_TOKEN');
 
-    const endpoint = getScriptureApiEndpoint(versesData);
-    const {
-      data: { data },
-    }: { data: { data: ScriptureApiVerseData } } = await axios.get(endpoint, {
-      headers: {
-        'api-key': scriptureApiKey,
-      },
-    });
+    try {
+      const endpoint = getScriptureApiEndpoint(versesData);
+      const {
+        data: { data },
+      }: { data: { data: ScriptureApiVerseData } } = await axios.get(endpoint, {
+        headers: {
+          'api-key': scriptureApiKey,
+        },
+      });
+      return {
+        id: `${version}/${book}/${chapter}/${verse}`,
+        version,
+        verse: data.content,
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Error: Get data from Scripture API',
+      );
+    }
+  }
 
-    return {
-      id: `${bibleSource}/${bibleVersion}/${book}/${chapter}/${verse}`,
-      verse: data.content,
-    };
+  async getFromBG(
+    versesData: GetVersesDto,
+  ): Promise<ExternalVerseResponse | ExternalVerseResponse[]> {
+    const { book, chapter, verse } = versesData;
+    const url = `https://www.biblegateway.com/verse/es/1%20Corintios%201:1`;
+    const { data } = await axios.get(url);
+    const { document } = new JSDOM(data).window;
+
+    try {
+      const verses = document?.querySelectorAll('.singleverse-row');
+      const arrVerses = Array.from(verses);
+      if (arrVerses?.length) {
+        const enabledVersions = BIBLE_VERSIONS.map((bv) => bv.value);
+        const versesObjs: ExternalVerseResponse[] = arrVerses
+          .map((verseContent: any) => {
+            const v = verseContent.querySelector(
+              '.singleverse-version a',
+            )?.textContent;
+            const t =
+              verseContent.querySelector('.singleverse-text')?.textContent;
+            if (v && t && enabledVersions.includes(v)) {
+              const id = `${v}/${book}/${chapter}/${verse}`;
+              return {
+                id,
+                version: v,
+                verse: t,
+              };
+            }
+            return;
+          })
+          .filter(Boolean);
+        return versesObjs;
+      }
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Error: Parsing getFromBG content',
+      );
+    }
   }
 }

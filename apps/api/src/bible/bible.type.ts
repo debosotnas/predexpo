@@ -7,6 +7,7 @@ export interface ScriptureApiVerseData {
 
 export interface ExternalVerseResponse {
   id: string;
+  version: string;
   verse: string;
 }
 

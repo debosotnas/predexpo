@@ -79,3 +79,13 @@ export const getScriptureApiEndpoint = ({
   `https://api.scripture.api.bible/v1/bibles/${BIBLE_1909_ID}/verses/${
     BIBLE_ABBR[book - 1]
   }.${chapter}.${verse}`;
+
+export const BIBLE_VERSIONS = [
+  { value: '1909', label: 'RV1909' },
+  { value: 'RVR1960', label: 'RVR1960' },
+  { value: 'NBLA', label: 'NBLA' },
+  { value: 'LBLA', label: 'LBLA' },
+  { value: 'NTV', label: 'NTV' },
+  { value: 'NVI', label: 'NVI' },
+  { value: 'TLA', label: 'TLA' },
+];

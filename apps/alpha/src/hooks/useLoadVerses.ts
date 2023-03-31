@@ -34,6 +34,11 @@ export function useLoadVerses() {
           label: data.label,
           greek: data.greek,
           verse: data.verse,
+          path: {
+            book: selectedBook,
+            chapter: selectedChapter,
+            verse: selectedVerse,
+          },
         };
       } catch (err) {
         return;

@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type ConfigSliceState = {
   viewInExpertMode: boolean;
   currentSecondaryVersion: string;
+  lastVersionSelected: string;
 };
 
 const initialState: ConfigSliceState = {
   viewInExpertMode: false,
   currentSecondaryVersion: '',
+  lastVersionSelected: '1909',
 };
 
 const confiSlice = createSlice({
@@ -17,9 +19,14 @@ const confiSlice = createSlice({
     setExpertViewMode(state, action: PayloadAction<boolean>) {
       state.viewInExpertMode = action.payload;
     },
+    updateLastSelectedVersion(state, action: PayloadAction<string>) {
+      state.lastVersionSelected = action.payload;
+    },
   },
 });
 
-export const { setExpertViewMode: setExpertViewModeAction } =
-  confiSlice.actions;
+export const {
+  setExpertViewMode: setExpertViewModeAction,
+  updateLastSelectedVersion: updateLastSelectedVersionAction,
+} = confiSlice.actions;
 export { confiSlice };

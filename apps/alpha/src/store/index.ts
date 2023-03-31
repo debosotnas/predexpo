@@ -1,9 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { confiSlice, setExpertViewModeAction } from './slices/configSlice';
+import {
+  confiSlice,
+  setExpertViewModeAction,
+  updateLastSelectedVersionAction,
+} from './slices/configSlice';
 import {
   versesSlice,
   addVersesAction,
   removeRenderVerseAction,
+  addMultiversionAction,
 } from './slices/versesSlice';
 
 const store = configureStore({
@@ -17,4 +22,10 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export { store };
-export { addVersesAction, setExpertViewModeAction, removeRenderVerseAction };
+export {
+  addVersesAction,
+  setExpertViewModeAction,
+  removeRenderVerseAction,
+  addMultiversionAction,
+  updateLastSelectedVersionAction,
+};
