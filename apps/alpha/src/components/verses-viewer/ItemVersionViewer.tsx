@@ -12,7 +12,7 @@ interface ItemVersionProps {
 }
 
 const BIBLE_VERSIONS = [
-  { value: '1909', label: 'RV1909' },
+  // { value: '1909', label: 'RV1909' }, // TODO: Verify app on Prod. Scripture API is failing
   { value: 'RVR1960', label: 'RVR1960' },
   { value: 'NBLA', label: 'NBLA' },
   { value: 'LBLA', label: 'LBLA' },
@@ -22,7 +22,7 @@ const BIBLE_VERSIONS = [
 ];
 
 function ItemVersionViewer({ verseData }: ItemVersionProps) {
-  // const [isFetchingSelect, setIsFetchingSelect] = useState<boolean>(false);
+  const [isFetchingSelect, setIsFetchingSelect] = useState<boolean>(true);
   const dispatch = useDispatch();
   const [isSelectDisabled, setIsSelectDisabled] = useState<boolean>(false);
   const [currTextVerse, setCurrTextVerse] = useState<
@@ -64,6 +64,7 @@ function ItemVersionViewer({ verseData }: ItemVersionProps) {
     } else {
       console.error('Error - Getting verses from API: ', verses);
     }
+    setIsFetchingSelect(false);
   };
 
   useEffect(() => {
@@ -100,17 +101,19 @@ function ItemVersionViewer({ verseData }: ItemVersionProps) {
     dispatch(updateLastSelectedVersionAction(value));
   };
 
-  if (verseData.verse) {
-    return (
-      <div>
-        <div className='m-5 w-1/2 md:w-1/3'>
-          <HtmlContainer className='inner-verses' html={verseData.verse} />
-        </div>
-      </div>
-    );
-  }
+  // In first version verseData.verse have included the 1909 text
+  // later was removed and GET in separate render
+  // if (verseData.verse) {
+  //   return (
+  //     <div>
+  //       <div className='m-5 w-1/2 md:w-1/3'>
+  //         <HtmlContainer className='inner-verses' html={verseData.verse} />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (currTextVerse) {
+  if (currTextVerse || (!currTextVerse && !isFetchingSelect)) {
     return (
       <div className='m-5 w-1/2 md:w-1/3'>
         <div className='flex justify-end'>
@@ -133,7 +136,11 @@ function ItemVersionViewer({ verseData }: ItemVersionProps) {
             placeholder={'Seleccione...'}
           />
         </div>
-        <HtmlContainer className='inner-verses' html={currTextVerse.verse} />
+        {currTextVerse ? (
+          <HtmlContainer className='inner-verses' html={currTextVerse.verse} />
+        ) : (
+          <></>
+        )}
       </div>
     );
   }

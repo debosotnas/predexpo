@@ -20,6 +20,7 @@ import {
   ScriptureApiVerseData,
 } from './bible.type';
 import { JSDOM } from 'jsdom';
+import * as path from 'path';
 
 @Injectable()
 export class BibleService {
@@ -27,9 +28,18 @@ export class BibleService {
 
   async getVerse(getVersesDto: GetVersesDto): Promise<DataVerseResponse> {
     const { book, chapter, verse }: GetVersesDto = getVersesDto;
+    const CURR_ENV = this.configService.get<string>('ENV');
+
+    let pathToDB: string;
+    if (CURR_ENV === 'dev') {
+      pathToDB = 'NTGspa.sqlite';
+    } else {
+      pathToDB = path.join(__dirname, '..', 'NTGspa.sqlite');
+    }
+    // console.log('>>> pathToDB: ', pathToDB);
 
     const db = await open({
-      filename: 'NTGspa.sqlite',
+      filename: pathToDB,
       driver: sqlite.Database,
       mode: sqlite.OPEN_READONLY,
     });
@@ -96,6 +106,7 @@ export class BibleService {
         verse: data.content,
       };
     } catch (err) {
+      console.log('>>> SCRIPTURE API Err: ', err?.message);
       throw new InternalServerErrorException(
         'Error: Get data from Scripture API',
       );
@@ -107,7 +118,14 @@ export class BibleService {
   ): Promise<ExternalVerseResponse | ExternalVerseResponse[]> {
     const { book, chapter, verse } = versesData;
     const url = `https://www.biblegateway.com/verse/es/1%20Corintios%201:1`;
-    const { data } = await axios.get(url);
+    let resp;
+    try {
+      resp = await axios.get(url);
+    } catch (err) {
+      console.log('>> Error getting axios data: ', err?.message);
+      throw new InternalServerErrorException('Error getting data from BG');
+    }
+    const data = resp.data;
     const { document } = new JSDOM(data).window;
 
     try {

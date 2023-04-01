@@ -9,7 +9,7 @@ type ConfigSliceState = {
 const initialState: ConfigSliceState = {
   viewInExpertMode: false,
   currentSecondaryVersion: '',
-  lastVersionSelected: '1909',
+  lastVersionSelected: 'RVR1960',
 };
 
 const confiSlice = createSlice({
