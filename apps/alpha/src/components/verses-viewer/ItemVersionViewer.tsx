@@ -6,7 +6,6 @@ import { useLoadExternalVerses } from '../../hooks/useLoadExternalVerses';
 import { RootState, updateLastSelectedVersionAction } from '../../store';
 import { ExternalVerseData, VerseData } from '../../types/verses';
 import { HtmlContainer } from '../common/HtmlContainer';
-import axios from 'axios';
 
 interface ItemVersionProps {
   verseData: VerseData;
