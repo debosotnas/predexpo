@@ -10,6 +10,7 @@ import { GetVersesDto } from './dto/get-verses.dto';
 import { BiBleSource, BibleVersion } from './bible.enum';
 import {
   BIBLE_ABBR,
+  BIBLE_FULL,
   BIBLE_VERSIONS,
   getScriptureApiEndpoint,
 } from './bible.data';
@@ -117,7 +118,16 @@ export class BibleService {
     versesData: GetVersesDto,
   ): Promise<ExternalVerseResponse | ExternalVerseResponse[]> {
     const { book, chapter, verse } = versesData;
-    const url = `https://www.biblegateway.com/verse/es/1%20Corintios%201:1`;
+
+    const bookName = BIBLE_FULL[book - 1];
+    const bookPath = encodeURIComponent(`${bookName} ${chapter}:${verse}`);
+    // query = "John 3:16",
+    // version: string = "ESV"
+    // let encodedSearch = encodeURIComponent(query);
+    // let encoodedVersion = encodeURIComponent(version);
+    // const url = `https://www.biblegateway.com/verse/es/1%20Corintios%201:1`;
+
+    const url = `https://www.biblegateway.com/verse/es/${bookPath}`;
     let resp;
     try {
       resp = await axios.get(url);

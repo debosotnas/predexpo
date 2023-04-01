@@ -109,7 +109,7 @@ function BookSelector() {
                   }
                   disabled={formDisabled}
                   type='text'
-                  className='input input-bordered input-xs w-10 h-10'
+                  className='input input-bordered bg-white input-xs w-10 h-10'
                 />
                 <span className='mx-1'>:</span>
                 <input
@@ -119,7 +119,7 @@ function BookSelector() {
                   }
                   disabled={formDisabled}
                   type='text'
-                  className='input input-bordered input-xs w-10 h-10'
+                  className='input input-bordered bg-white input-xs w-10 h-10'
                 />
               </div>
             </div>
