@@ -115,7 +115,7 @@ function ItemVersionViewer({ verseData }: ItemVersionProps) {
 
   if (currTextVerse || (!currTextVerse && !isFetchingSelect)) {
     return (
-      <div className='m-5 w-1/2 md:w-1/3'>
+      <div className='m-5 md:w-1/3'>
         <div className='flex justify-end'>
           <Select
             key={`my_unique_select_key__${selectedVersion}`}

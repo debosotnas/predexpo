@@ -76,7 +76,7 @@ function VersesViewerItem({ verseData }: { verseData: VerseData }) {
   const dispatch = useDispatch();
 
   const classesForGreekRender = classNames(
-    'm-5 w-1/2 md:w-2/3',
+    'm-5 md:w-2/3',
     renderAsExpertMode ? 'render-as-expert-mode' : ''
   );
 
@@ -133,7 +133,7 @@ function VersesViewerItem({ verseData }: { verseData: VerseData }) {
           })}
         </div>
       </div>
-      <div className='flex'>
+      <div className='flex flex-col md:flex-row'>
         {greekWordInfo ? (
           <ItemGreekDetailViewer
             handleClose={handleClickGreekWordInfo}
