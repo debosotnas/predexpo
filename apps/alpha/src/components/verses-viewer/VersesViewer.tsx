@@ -9,7 +9,7 @@ function VersesViewer() {
   const versesDataRendered = useSelector((state: RootState) => {
     return state.verses.dataRendered;
   });
-
+  console.log('>>>> versesDataRendered: ', versesDataRendered);
   return (
     <div>
       {versesDataRendered?.length

@@ -13,15 +13,22 @@ export class BibleController {
     @Param('chapter') chapter: number,
     @Param('verse') verse: number,
     @Query()
-    { source, version }: { source: BiBleSource; version: BibleVersion },
-  ): Promise<DataVerseResponse> {
-    return this.bibleService.getVerse({
-      book,
-      chapter,
-      verse,
+    {
       source,
       version,
-    });
+      amountVerses,
+    }: { source: BiBleSource; version: BibleVersion; amountVerses: number },
+  ): Promise<DataVerseResponse[]> {
+    return this.bibleService.getVerse(
+      {
+        book,
+        chapter,
+        verse,
+        source,
+        version,
+      },
+      amountVerses,
+    );
   }
 
   @Get('/external/:book/:chapter/:verse')

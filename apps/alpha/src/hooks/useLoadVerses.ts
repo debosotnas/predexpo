@@ -9,41 +9,62 @@ export function useLoadVerses() {
   });
 
   const getVerses: (
-    v: VersesToLoadInfo | VersesToLoadInfo[]
-  ) => Promise<VerseData | undefined> = async (
-    versesToLoad: VersesToLoadInfo | VersesToLoadInfo[]
+    v: VersesToLoadInfo
+  ) => Promise<VerseData[] | undefined> = async (
+    versesToLoad: VersesToLoadInfo
   ) => {
-    const { selectedBook, selectedChapter, selectedVerse } = Array.isArray(
-      versesToLoad
-    )
-      ? versesToLoad[0] //TODO: Process every verse
-      : versesToLoad;
+    const {
+      selectedBook,
+      selectedChapter,
+      selectedVerse,
+      selectedDestChapter,
+      selectedDestVerse,
+      amountVerses,
+    } = versesToLoad;
 
-    const verseSearchId = `${selectedBook}/${selectedChapter}/${selectedVerse}`;
-    let verseData: VerseData | undefined = versesDataLoaded.find(
-      (verse: VerseData) => verse.id === verseSearchId
-    );
+    // const verseSearchId = `${selectedBook}/${selectedChapter}/${selectedVerse}`;
+    let verseData: VerseData[];
+    // TODO: Cache if is needed for greek
+    // let verseData: VerseData[] | undefined = versesDataLoaded.find(
+    //   (verse: VerseData) => verse.id === verseSearchId
+    // );
     // Get verse from DB if it wasn't previously loaded
-    if (!verseData) {
-      try {
-        const { data } = await axios.get(
-          `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}`
-        );
-        verseData = {
-          id: data.id,
-          label: data.label,
-          greek: data.greek,
-          verse: data.verse,
-          path: {
-            book: selectedBook,
-            chapter: selectedChapter,
-            verse: selectedVerse,
+    // if (!verseData) {
+    try {
+      const { data } = await axios.get(
+        `/api/bible/${selectedBook}/${selectedChapter}/${selectedVerse}?amountVerses=${amountVerses}`
+      );
+      if (data && data.length) {
+        verseData = data.map((verseObj: any) => {
+          return {
+            id: verseObj.id,
+            label: data.label,
+            greek: data.greek,
+            verse: data.verse,
+            path: {
+              ...verseObj.path,
+            },
+          };
+        });
+      } else {
+        verseData = [
+          {
+            id: data.id,
+            label: data.label,
+            greek: data.greek,
+            verse: data.verse,
+            path: {
+              book: selectedBook,
+              chapter: selectedChapter,
+              verse: selectedVerse,
+            },
           },
-        };
-      } catch (err) {
-        return;
+        ];
       }
+    } catch (err) {
+      return;
     }
+    // }
     return verseData;
   };
 

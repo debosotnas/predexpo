@@ -27,7 +27,10 @@ import * as path from 'path';
 export class BibleService {
   constructor(private readonly configService: ConfigService) {}
 
-  async getVerse(getVersesDto: GetVersesDto): Promise<DataVerseResponse> {
+  async getVerse(
+    getVersesDto: GetVersesDto,
+    amountVerses: number,
+  ): Promise<DataVerseResponse[]> {
     const { book, chapter, verse }: GetVersesDto = getVersesDto;
     const CURR_ENV = this.configService.get<string>('ENV');
 
@@ -44,27 +47,60 @@ export class BibleService {
       driver: sqlite.Database,
       mode: sqlite.OPEN_READONLY,
     });
-    const row = await db.get(
-      'SELECT Scripture from Bible where Book = ? AND Chapter = ? AND Verse = ?',
-      [book, chapter, verse],
+    // const row = await db.get(
+    //   'SELECT Scripture from Bible where Book = ? AND Chapter = ? AND Verse = ?',
+    //   [book, chapter, verse],
+    // );
+
+    if (isNaN(amountVerses) || amountVerses < 1 || amountVerses > 10) {
+      amountVerses = 1;
+      // throw new InternalServerErrorException(
+      //   'Invalid amount of verses selected',
+      // );
+    }
+
+    const row = await db.all(
+      'SELECT * from Bible where Book >= ? AND Chapter >= ? AND Verse >= ? limit ?',
+      [book, chapter, verse, amountVerses],
     );
 
-    if (!row) {
+    if (row.length === 0) {
       throw new NotFoundException('Bible verse not found');
     }
+
+    const rowsResult: DataVerseResponse[] = row.map((row: any) => {
+      const rBook = parseInt(row['Book']);
+      const rChap = row['Chapter'];
+      const rVers = row['Verse'];
+
+      return {
+        id: `${rBook}/${rChap}/${rVers}`,
+        path: {
+          book: rBook,
+          chapter: rChap,
+          verse: rVers,
+        },
+        greek: row['Scripture'] ? row['Scripture'] : '',
+        label: `${BIBLE_ABBR[rBook - 1]}. ${rChap}:${rVers}`,
+        verse: '',
+      };
+    });
+
+    console.log('>>> row: ', row);
     // For now leaving without external verse. FE will get once greek version will be rendered
     // const externalVerse: ExternalVerseResponse = await this.getExternalVerse(
     //   getVersesDto,
     // );
-    const response: DataVerseResponse = {
-      id: `${book}/${chapter}/${verse}`,
-      label: `${BIBLE_ABBR[book - 1]}. ${chapter}:${verse}`,
-      greek: row?.Scripture ? row.Scripture : '',
-      verse: '',
-      // verse: externalVerse.verse,
-    };
+    //-----------
+    // const response: DataVerseResponse = {
+    //   id: `${book}/${chapter}/${verse}`,
+    //   label: `${BIBLE_ABBR[book - 1]}. ${chapter}:${verse}`,
+    //   // greek: row?.Scripture ? row.Scripture : '',
+    //   greek: '',
+    //   verse: '',
+    // };
 
-    return response;
+    return rowsResult;
   }
 
   async getExternalVerse(
@@ -113,6 +149,16 @@ export class BibleService {
       );
     }
   }
+
+  /*
+example cookie:
+// https://github.com/axios/axios/issues/943
+  axios.get(url, {
+            headers: {
+                Cookie: "cookie1=value; cookie2=value; cookie3=value;"
+            }
+        })
+  */
 
   async getFromBG(
     versesData: GetVersesDto,
