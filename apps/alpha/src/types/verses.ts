@@ -19,6 +19,9 @@ export interface VersesToLoadInfo {
   selectedBook: number | undefined;
   selectedChapter: number | undefined;
   selectedVerse: number | undefined;
+  selectedDestVerse?: number | undefined;
+  selectedDestChapter?: number | undefined;
+  amountVerses?: number | undefined;
   version?: string;
 }
 

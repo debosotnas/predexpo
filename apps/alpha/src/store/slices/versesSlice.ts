@@ -46,9 +46,9 @@ const versesSlice = createSlice({
   name: 'verses',
   initialState,
   reducers: {
-    addVerses(state, action: PayloadAction<VerseData>) {
-      state.dataLoaded.push(action.payload);
-      state.dataRendered.push(action.payload);
+    addVerses(state, action: PayloadAction<VerseData[]>) {
+      state.dataLoaded.push(...action.payload);
+      state.dataRendered.push(...action.payload);
     },
     removeRenderVerse(state, action: PayloadAction<string>) {
       const idx = state.dataRendered.findIndex(
