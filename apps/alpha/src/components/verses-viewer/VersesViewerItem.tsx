@@ -119,12 +119,12 @@ function VersesViewerItem({ verseData }: { verseData: VerseData }) {
   return (
     <div
       key={verseData.id}
-      className='container mt-1 border border-slate-100 hover:border-slate-400'
+      className='mt-1 border border-slate-100 hover:border-slate-400'
     >
       <div className='flex justify-between'>
         <span className='my-3 text-xs ml-3 flex items-center border border-lime-400 bg-lime-100 text-600 rounded px-2'>
           {NT_BOOKS.find((b) => b.id === verseData.path.book)?.name}{' '}
-          {`${verseData.path.chapter}:${verseData.path.chapter}`}
+          {`${verseData.path.chapter}:${verseData.path.verse}`}
         </span>
         <div className='flex mr-2'>
           {getViewerButtons({

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 567 261" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-miterlimit:10;">
+    <g transform="matrix(1,0,0,1,-437.138,-374.449)">
+        <g transform="matrix(1,-0,-0,1,437.138,374.449)">
+            <path d="M162.314,247.194L177.316,239.697L162.317,232.194C166.066,235.945 166.065,243.445 162.314,247.194Z" style="fill:rgb(0,141,215);"/>
+            <path d="M66.295,146.989C68.654,145.558 71.732,146.312 73.163,148.671C74.594,151.03 73.841,154.108 71.481,155.539C69.122,156.97 66.044,156.217 64.613,153.857C63.182,151.498 63.935,148.421 66.295,146.989Z" style="fill:none;stroke:rgb(0,141,215);stroke-width:5px;"/>
+            <path d="M165.316,239.695C2.073,238.67 -1.758,196.278 64.613,153.857" style="fill:none;stroke:rgb(0,141,215);stroke-width:5px;stroke-linejoin:round;stroke-miterlimit:1.5;stroke-dasharray:5,10,0,0;"/>
+        </g>
+        <g transform="matrix(4.3901,-0.857112,0.857112,4.3901,-2241.32,-594.96)">
+            <g transform="matrix(12,0,0,12,624.031,364.14)">
+            </g>
+            <text x="559.032px" y="364.14px" style="font-family:'Chalkduster', cursive;font-size:12px;fill:rgb(0,141,215);">St<tspan x="570.356px 578.007px 584.345px " y="364.14px 364.14px 364.14px ">art</tspan> he<tspan x="610.52px 616.593px " y="364.14px 364.14px ">re</tspan></text>
+        </g>
+    </g>
+</svg>

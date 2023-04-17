@@ -83,7 +83,7 @@ function BookSelector() {
   };
 
   return (
-    <div className='container flex flex-col md:flex-row justify-between bg-slate-100 p-2'>
+    <div className='flex flex-col md:flex-row justify-between bg-slate-100 p-2'>
       <div className=''>
         <form ref={formRef} onSubmit={handleSubmitForm}>
           <div className='flex flex-row items-center'>
